@@ -50,6 +50,12 @@ public class EditorFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        openFile();
+    }
+
     public void openFile(){
         mEditorView.setVisibility(View.GONE);
         Intent intent = getActivity().getIntent();
