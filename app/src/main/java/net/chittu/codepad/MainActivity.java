@@ -1,30 +1,31 @@
 package net.chittu.codepad;
 
+import android.app.ComponentCaller;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import net.chittu.codepad.databinding.ActivityMainBinding;
+
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -89,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
+
     public boolean askForFilePermissions() {
-        boolean hasPermission = this.checkSelfPermission(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean hasPermission = this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 
         if (!hasPermission) {
-            requestPermissions(new String[]{android.Manifest.permission.MANAGE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             return true;
         }
         return false;
@@ -116,12 +117,25 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    // permission denied, boo!
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                 }
 
                 return;
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, @NonNull ComponentCaller caller) {
+        super.onActivityResult(requestCode, resultCode, data, caller);
+
+        if(resultCode == RESULT_OK){
+
+        }
+        else{
+            Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -138,4 +152,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return super.onSupportNavigateUp();
     }
+
+    private void readExternalStorage(){
+        File root = Environment.getExternalStorageDirectory();
+        if(root.isDirectory()){
+
+        }
+    }
+
 }

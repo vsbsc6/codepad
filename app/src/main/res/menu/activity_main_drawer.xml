@@ -4,17 +4,83 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+        <item android:icon="@drawable/ic_menu_file" android:title="File">
+            <menu>
+                <item
+                    android:id="@+id/nav_new"
+                    android:icon="@drawable/ic_menu_new"
+                    android:title="New"/>
+
+                <item
+                    android:id="@+id/nav_open"
+                    android:icon="@drawable/ic_menu_open"
+                    android:title="Open"/>
+
+                <item
+                    android:id="@+id/nav_open_folder"
+                    android:icon="@drawable/ic_menu_open_folder"
+                    android:title="Open Folder"/>
+
+                <item
+                    android:id="@+id/nav_open_save"
+                    android:icon="@drawable/ic_menu_save"
+                    android:title="Save"/>
+
+                <item
+                    android:id="@+id/nav_open_close"
+                    android:icon="@drawable/ic_menu_close"
+                    android:title="Close"/>
+            </menu>
+        </item>
+
+        <item android:icon="@drawable/ic_menu_edit" android:title="Edit">
+            <menu>
+                <item
+                    android:id="@+id/nav_undo"
+                    android:icon="@drawable/ic_menu_undo"
+                    android:title="Undo"/>
+
+                <item
+                    android:id="@+id/nav_redo"
+                    android:icon="@drawable/ic_menu_redo"
+                    android:title="Redo"/>
+
+                <item
+                    android:id="@+id/nav_cut"
+                    android:icon="@drawable/ic_menu_cut"
+                    android:title="Cut"/>
+
+                <item
+                    android:id="@+id/nav_copy"
+                    android:icon="@drawable/ic_menu_copy"
+                    android:title="Copy"/>
+
+                <item
+                    android:id="@+id/nav_paste"
+                    android:icon="@drawable/ic_menu_paste"
+                    android:title="Paste"/>
+
+                <item
+                    android:id="@+id/nav_select_all"
+                    android:icon="@drawable/ic_menu_select_all"
+                    android:title="Select All"/>
+
+                <item
+                    android:id="@+id/nav_indent"
+                    android:icon="@drawable/ic_menu_indent"
+                    android:title="Indent"/>
+
+                <item
+                    android:id="@+id/nav_unindent"
+                    android:icon="@drawable/ic_menu_unindent"
+                    android:title="Unindent"/>
+
+                <item
+                    android:id="@+id/nav_reformat"
+                    android:icon="@drawable/ic_menu_reformat"
+                    android:title="Reformat"/>
+            </menu>
+        </item>
+
     </group>
 </menu>
