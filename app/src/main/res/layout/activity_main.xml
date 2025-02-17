@@ -39,13 +39,60 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/pager"
+        <ScrollView
+            android:id="@+id/editor_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_marginBottom="48dp"
-            />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="90000dp"
+                android:orientation="horizontal"
+                >
+
+                <net.chittu.codepad.LineView
+                    android:id="@+id/line_number"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="8dp"
+                    android:background="#e4e4e4"
+                    android:textColor="#808080"
+                    android:textSize="14sp"
+                    android:typeface="monospace"
+                    android:gravity="end|top"
+                    android:focusable="false"
+                    android:clickable="false"
+                    />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fillViewport="true"
+                    >
+
+                    <net.chittu.codepad.CodeView
+                        android:id="@+id/editor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="8dp"
+                        android:paddingStart="1dp"
+                        android:paddingEnd="4dp"
+                        android:background="#ffffff"
+                        android:textColor="#000"
+                        android:textSize="14sp"
+                        android:typeface="monospace"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        />
+
+                </HorizontalScrollView>
+            </LinearLayout>
+        </ScrollView>
 
         <HorizontalScrollView
             android:id="@+id/button_wrapper"

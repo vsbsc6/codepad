@@ -61,6 +61,7 @@ public class FilesAdapter extends FragmentStateAdapter implements TabLayoutMedia
 
         String location = locations.remove(position);
         codeFiles.remove(location);
+
         notifyItemRemoved(position);
     }
 

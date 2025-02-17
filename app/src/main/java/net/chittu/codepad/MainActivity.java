@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -33,6 +35,13 @@ import net.chittu.codepad.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private int stock = 0;
     private FilesAdapter filesAdapter;
+    private CodeView mEditorView;
+    private LineView mLineNumberView;
+    private CodeFile activeCodeFile;
+
+    private boolean idle = true;
+
+    private FileManager fileManager;
 
     private ActivityResultLauncher<String[]> openLauncher;
     private AppBarConfiguration mAppBarConfiguration;
@@ -59,7 +68,80 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        this.filesAdapter = new FilesAdapter(getSupportFragmentManager(), getLifecycle());
+        mEditorView = binding.editor;
+        mLineNumberView = binding.lineNumber;
+
+        final View editorContainer = binding.editorContainer;
+        editorContainer.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mEditorView.setMinimumHeight(editorContainer.getHeight());
+                        mLineNumberView.setMinimumHeight(editorContainer.getHeight());
+                        editorContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+        );
+
+        //this.filesAdapter = new FilesAdapter(getSupportFragmentManager(), getLifecycle());
+
+        this.fileManager = new FileManager();
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        if(uri != null){
+            CodeFile codeFile = new CodeFile(this, uri);
+            int tabIndex = fileManager.open(codeFile);
+            TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
+            if(tab != null){
+                tab.select();
+            }
+        }
+
+        binding.tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                changeCodeFile();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        mEditorView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(!idle)
+                    return;
+                idle = false;
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        activeCodeFile.setContent(editable.toString());
+                        idle = true;
+                    }
+                });
+                thread.start();
+            }
+        });
+
+        /*
         binding.pager.setAdapter(filesAdapter);
         new TabLayoutMediator(binding.tabs, binding.pager, filesAdapter).attach();
         Intent intent = getIntent();
@@ -71,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(tab != null){
                 tab.select();
             }
-        }
+        }*/
 
         this.openLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
                 new ActivityResultCallback<Uri>() {
@@ -79,11 +161,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onActivityResult(Uri uri) {
                         if(uri != null){
                             CodeFile codeFile = new CodeFile(MainActivity.this, uri);
+                            addCodeFile(codeFile);
+                            /*
                             int tabIndex = filesAdapter.open(codeFile);
                             TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
                             if(tab != null){
                                 tab.select();
-                            }
+                            }*/
                         }
                     }
                 });
@@ -92,23 +176,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void onClickTextButton(View view) {
+        /*
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         Fragment fragment = supportFragmentManager.findFragmentByTag("f" + binding.pager.getCurrentItem());
 
         if(fragment instanceof EditorFragment){
             EditorFragment homeFragment = (EditorFragment) fragment;
             homeFragment.onClickTextButton(view);
-        }
+        }*/
     }
 
     public void onClickTabButton(View view) {
+        /*
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         Fragment fragment = supportFragmentManager.findFragmentByTag("f" + binding.pager.getCurrentItem());
 
         if(fragment instanceof EditorFragment){
             EditorFragment homeFragment = (EditorFragment) fragment;
             homeFragment.onClickTabButton(view);
-        }
+        }*/
     }
 
 
@@ -135,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 1: {
+                /*
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     FragmentManager supportFragmentManager = getSupportFragmentManager();
@@ -147,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 } else {
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
                 return;
             }
@@ -204,11 +291,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String filename = "Untitled " + (++stock);
         Uri uri = Uri.parse("codepad://" + filename);
         CodeFile codeFile = new CodeFile(uri, filename, filename, "");
+        addCodeFile(codeFile);
+        /*
         int tabIndex = filesAdapter.open(codeFile);
         TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
         if(tab != null){
             tab.select();
-        }
+        }*/
     }
 
     private void openFile(){
@@ -216,6 +305,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void closeFile(){
-        filesAdapter.close(binding.tabs.getSelectedTabPosition());
+        //filesAdapter.close(binding.tabs.getSelectedTabPosition());
+        removeCodeFile();
+    }
+
+    private void addCodeFile(CodeFile codeFile){
+        int index = fileManager.open(codeFile);
+        activeCodeFile = codeFile;
+        mEditorView.setEnabled(false);
+        activeCodeFile.read(this, new Runnable() {
+            @Override
+            public void run() {
+                if(activeCodeFile.isRead()){
+                    mEditorView.setText(activeCodeFile.getContent());
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Unable to read file.", Toast.LENGTH_SHORT).show();
+                }
+                mEditorView.setEnabled(true);
+            }
+        });
+
+        if(index == binding.tabs.getTabCount()){
+            TabLayout.Tab tab = binding.tabs.newTab();
+            tab.setText(codeFile.getName());
+            binding.tabs.addTab(tab, true);
+        }
+        else{
+            binding.tabs.selectTab(binding.tabs.getTabAt(index));
+        }
+
+    }
+
+    private void removeCodeFile(){
+        int tabIndex = binding.tabs.getSelectedTabPosition();
+        binding.tabs.removeTab(binding.tabs.getTabAt(tabIndex));
+        fileManager.close(tabIndex);
+        tabIndex = binding.tabs.getSelectedTabPosition();
+        activeCodeFile = fileManager.getCodeFile(tabIndex);
+        mEditorView.setEnabled(false);
+        activeCodeFile.read(this, new Runnable() {
+            @Override
+            public void run() {
+                if(activeCodeFile.isRead()){
+                    mEditorView.setText(activeCodeFile.getContent());
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Unable to read file.", Toast.LENGTH_SHORT).show();
+                }
+                mEditorView.setEnabled(true);
+            }
+        });
+    }
+
+    private void changeCodeFile(){
+        int tabIndex = binding.tabs.getSelectedTabPosition();
+        activeCodeFile = fileManager.getCodeFile(tabIndex);
+        mEditorView.setEnabled(false);
+        activeCodeFile.read(this, new Runnable() {
+            @Override
+            public void run() {
+                if(activeCodeFile.isRead()){
+                    mEditorView.setText(activeCodeFile.getContent());
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Unable to read file.", Toast.LENGTH_SHORT).show();
+                }
+                mEditorView.setEnabled(true);
+            }
+        });
     }
 }
