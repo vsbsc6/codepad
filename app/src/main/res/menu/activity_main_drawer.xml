@@ -15,24 +15,26 @@
                     android:id="@+id/nav_open"
                     android:icon="@drawable/ic_menu_open"
                     android:title="Open"/>
-
+                <!--
                 <item
                     android:id="@+id/nav_open_folder"
                     android:icon="@drawable/ic_menu_open_folder"
                     android:title="Open Folder"/>
+                -->
 
                 <item
-                    android:id="@+id/nav_open_save"
+                    android:id="@+id/nav_save"
                     android:icon="@drawable/ic_menu_save"
                     android:title="Save"/>
 
                 <item
-                    android:id="@+id/nav_open_close"
+                    android:id="@+id/nav_close"
                     android:icon="@drawable/ic_menu_close"
                     android:title="Close"/>
             </menu>
         </item>
 
+        <!--
         <item android:icon="@drawable/ic_menu_edit" android:title="Edit">
             <menu>
                 <item
@@ -81,6 +83,7 @@
                     android:title="Reformat"/>
             </menu>
         </item>
+        -->
 
     </group>
 </menu>

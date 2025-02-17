@@ -33,7 +33,9 @@
                 app:tabGravity="fill"
                 app:tabIndicatorColor="?attr/colorPrimary"
                 app:tabMode="scrollable"
-                app:tabTextColor="#d3d3d3" />
+                app:tabTextColor="?attr/colorPrimary"
+                app:tabTextAppearance="@style/MyCustomTextAppearance"
+                />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -580,6 +582,7 @@
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
+    <!--
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view1"
         android:layout_width="wrap_content"
@@ -587,4 +590,5 @@
         android:layout_gravity="end"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"/>
+        -->
 </androidx.drawerlayout.widget.DrawerLayout>

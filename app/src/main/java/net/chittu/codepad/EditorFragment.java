@@ -9,24 +9,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Adapter;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import net.chittu.codepad.databinding.FragmentEditorBinding;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 public class EditorFragment extends Fragment {
-    FragmentEditorBinding binding;
+    private final CodeFile codeFile;
+
+    private FragmentEditorBinding binding;
+
     private CodeView mEditorView;
     private LineView mLineNumberView;
 
+    public EditorFragment(CodeFile codeFile){
+        this.codeFile = codeFile;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        codeFile.read(getContext(), null);
         binding = FragmentEditorBinding.inflate(inflater, container, false);
 
         mEditorView = binding.editor;
@@ -45,7 +51,6 @@ public class EditorFragment extends Fragment {
                     }
                 }
         );
-
         View root = binding.getRoot();
         return root;
     }
@@ -53,27 +58,20 @@ public class EditorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        openFile();
+        codeFile.read(getContext(), () -> {
+            if(codeFile.isRead()){
+                mEditorView.setText(codeFile.getContent());
+            }
+            else{
+                Toast.makeText(getContext(), "Unable to read file.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    public void openFile(){
-        mEditorView.setVisibility(View.GONE);
-        Intent intent = getActivity().getIntent();
-
-        if(intent != null){
-            final Uri uri = intent.getData();
-            if(uri != null){
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Manager.getInstance(getActivity()).readUri(uri, mEditorView.getText());
-                    }
-                }, 500);
-
-            }
-            mEditorView.setVisibility(View.VISIBLE);
-        }
+    @Override
+    public void onPause() {
+        super.onPause();
+        codeFile.setContent(mEditorView.getText().toString());
     }
 
     public void saveFile(int id){

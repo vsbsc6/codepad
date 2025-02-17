@@ -3,7 +3,7 @@ package net.chittu.codepad;
 import android.app.ComponentCaller;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MenuItem;
@@ -12,8 +12,12 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -25,15 +29,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import net.chittu.codepad.databinding.ActivityMainBinding;
 
-import java.io.File;
 
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private int stock = 0;
+    private FilesAdapter filesAdapter;
 
-public class MainActivity extends AppCompatActivity {
-
+    private ActivityResultLauncher<String[]> openLauncher;
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
-
-    private EditorsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +59,36 @@ public class MainActivity extends AppCompatActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        EditorsAdapter adapter = new EditorsAdapter(getSupportFragmentManager(), getLifecycle());
-        binding.pager.setAdapter(adapter);
-        new TabLayoutMediator(binding.tabs, binding.pager, (tab, position) -> tab.setText("File " + (position + 1))
-        ).attach();
+        this.filesAdapter = new FilesAdapter(getSupportFragmentManager(), getLifecycle());
+        binding.pager.setAdapter(filesAdapter);
+        new TabLayoutMediator(binding.tabs, binding.pager, filesAdapter).attach();
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        if(uri != null){
+            CodeFile codeFile = new CodeFile(this, uri);
+            int tabIndex = filesAdapter.open(codeFile);
+            TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
+            if(tab != null){
+                tab.select();
+            }
+        }
+
+        this.openLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        if(uri != null){
+                            CodeFile codeFile = new CodeFile(MainActivity.this, uri);
+                            int tabIndex = filesAdapter.open(codeFile);
+                            TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
+                            if(tab != null){
+                                tab.select();
+                            }
+                        }
+                    }
+                });
+
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     public void onClickTextButton(View view) {
@@ -140,11 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.save){
-            askForFilePermissions();
-
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -153,11 +177,45 @@ public class MainActivity extends AppCompatActivity {
         return super.onSupportNavigateUp();
     }
 
-    private void readExternalStorage(){
-        File root = Environment.getExternalStorageDirectory();
-        if(root.isDirectory()){
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.nav_new){
+            newFile();
+            binding.drawerLayout.close();
+            return true;
+        }
 
+        if(item.getItemId() == R.id.nav_open){
+            openFile();
+            binding.drawerLayout.close();
+            return true;
+        }
+
+        if(item.getItemId() == R.id.nav_close){
+            closeFile();
+            binding.drawerLayout.close();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void newFile(){
+        String filename = "Untitled " + (++stock);
+        Uri uri = Uri.parse("codepad://" + filename);
+        CodeFile codeFile = new CodeFile(uri, filename, filename, "");
+        int tabIndex = filesAdapter.open(codeFile);
+        TabLayout.Tab tab = binding.tabs.getTabAt(tabIndex);
+        if(tab != null){
+            tab.select();
         }
     }
 
+    private void openFile(){
+        openLauncher.launch(new String[]{"*/*"});
+    }
+
+    private void closeFile(){
+        filesAdapter.close(binding.tabs.getSelectedTabPosition());
+    }
 }
