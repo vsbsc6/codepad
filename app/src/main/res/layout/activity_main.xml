@@ -45,7 +45,9 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="48dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:visibility="gone"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,7 +102,9 @@
             android:layout_height="48dp"
             android:layout_gravity="bottom"
             android:scrollbars="none"
-            android:background="#fff">
+            android:background="#fff"
+            android:visibility="gone"
+            >
 
             <LinearLayout
                 android:id="@+id/button_container"
