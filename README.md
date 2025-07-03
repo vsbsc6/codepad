@@ -7,13 +7,25 @@
 ## ✨ Features
 
 - ✅ **General-purpose text and code editor**  
-- 🎨 **Syntax highlighting** for popular programming languages (HTML, XML, Java, C++, Python, JavaScript, etc.)
+
 - 📁 **File management**: Open, edit, and save files from internal or external storage
 - 🧠 **Intelligent editing**: Line numbering, tab support, undo/redo, and indentation
-- 🔍 **Search & Replace** functionality with regular expression support
-- 🌙 **Dark & Light themes**
 - 🔓 **Completely Free & Open** — No ads, no tracking
-- 📦 **Tiny footprint** — Lightweight and fast, even on older devices
+- 📦 **Tiny footprint** — Lightweight and fast
+
+## ✅ To-Do
+
+Here are some upcoming features and improvements planned for future versions:
+
+- [ ] 🎨 **Syntax highlighting** for popular programming languages (HTML, XML, Java, C++, Python, JavaScript, etc.)
+- [ ] 🔍 **Search & Replace** functionality with regular expression support
+- [ ] 🌙 **Dark & Light themes**
+- [ ] Git integration (basic viewing and diff)
+- [ ] Code snippets and autocomplete suggestions
+- [ ] External keyboard shortcut support
+- [ ] Split view for side-by-side editing
+- [ ] Cloud sync and backup options
+- [ ] Plugin/extension system (experimental)
 
 ## 🚀 Ideal Use Cases
 
