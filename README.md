@@ -51,7 +51,7 @@ CodePad is an ongoing project. Contributions, feedback, and suggestions are welc
 ## 📧 Contact
 
 For feedback, suggestions, or bug reports, please contact:  
-📩 `net.chittu.codepad [at] gmail.com`
+📩 `vsbsc6 [at] gmail.com`
 
 ## 📄 License
 
